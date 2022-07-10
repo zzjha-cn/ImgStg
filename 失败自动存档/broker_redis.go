@@ -46,7 +46,7 @@ func (it *BrokerRedis) Fail(ctx context.Context, msg IMsg, errFail error) (err e
 	msgId := msg.GetId()
 	queueName := msg.GetQueue()
 
-	// 针对失败的，要不要unique？ -失败记录一次就足够，所以应该是unique
+	// 针对失败的，要不要unique？ -失败记录需要统计，以及支持后续的重试策略，所以，应该不用unique。
 	keys := []string{
 		NewKeyMsgDetail(it.namespace, queueName, msgId),
 		NewKeyQueueFailed(it.namespace, queueName),
