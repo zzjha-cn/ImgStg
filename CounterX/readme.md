@@ -1,2 +1,0 @@
-使用chan实现会很明显慢于mutex实现。因为chan的CSP通讯底层就是互斥锁。
-高效率的应该使用mutex，更快的应该使用atomic。
