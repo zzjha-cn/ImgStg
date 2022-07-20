@@ -1,0 +1,52 @@
+@echo off
+::用户变量所在位置：`HKEY_CURRENT_USER\Environment`
+set USERregpath=HKEY_CURRENT_USER\Environment
+::系统变量所在位置：`HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Session Manager\Environment`
+set MACHINEregpath=HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+
+color 17
+echo.
+echo =====================================================
+echo                Go 环境变量设置
+echo =====================================================
+echo.
+
+set /P EN=请按 回车键 确认设置开始!
+echo.
+
+::用户环境变量
+::处理路径有空格异常，增加一句 set
+set GOPATH=%UserProfile%\gopath
+echo 新建用户环境变量 GOPATH=%GOPATH%
+reg add "%USERregpath%" /v "GOPATH" /t REG_SZ /d "%GOPATH%" /f
+echo.
+
+echo 增加用户环境变量 PATH=%GOPATH%\bin
+for /F "tokens=3*" %%i in ('reg query "%USERregpath%" /v "path" 2^>nul') do (set USERpath=%%i)
+echo USERpath=%USERpath%
+::reg add "%USERregpath%" /v "Path" /t REG_EXPAND_SZ /d "%USERpath%;%GOPATH%\bin" /f
+::若要保持变量 %GOPATH% 为变量名称而不是变量实际值增加 %%
+reg add "%USERregpath%" /v "Path" /t REG_EXPAND_SZ /d "%USERpath%;%%GOPATH%%\bin" /f
+echo.
+
+::系统环境变量
+::处理路径有空格异常，增加一句 set
+set GOROOT=C:\go
+echo 新建系统环境变量 GOROOT=%GOROOT%
+reg add "%MACHINEregpath%" /v "GOROOT" /t REG_SZ /d "%GOROOT%" /f
+echo.
+
+echo 增加系统环境变量 PATH=%GOROOT%\bin
+for /F "tokens=3*" %%i in ('reg query "%MACHINEregpath%" /v "path" 2^>nul') do (set MACHINEpath=%%i)
+echo MACHINEpath=%MACHINEpath%
+::reg add "%MACHINEregpath%" /v "Path" /t REG_EXPAND_SZ /d "%MACHINEpath%;%GOROOT%\bin" /f
+::若要保持变量 %GOROOT% 为变量名称而不是变量实际值增加 %%
+reg add "%MACHINEregpath%" /v "Path" /t REG_EXPAND_SZ /d "%MACHINEpath%;%%GOROOT%%\bin" /f
+echo.
+
+echo ************ Go 环境变量设置结束! ***********
+echo.
+echo 请按 任意键 退出!
+pause>nul
+
+::E:\vscode\Microsoft VS Code\bin
